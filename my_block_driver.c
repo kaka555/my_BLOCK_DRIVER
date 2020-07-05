@@ -7,7 +7,7 @@
 #include <linux/buffer_head.h>
 #include <linux/slab.h>
 #include <linux/hdreg.h>
-#include <linux/uaccess.h>
+#include <asm/uaccess.h>
 #include <linux/proc_fs.h>
 #include <linux/string.h>
 #include <linux/seq_file.h>
@@ -24,7 +24,7 @@ static int flag = 0;
 void pre_read_write(struct bio_vec *bio_vec_ptr, sector_t start_sector)
 {
 	void *mem;
-	if (bio_vec_ptr->bv_len > PAGE_SIZE) || (flag == 1) || (start_sector >= (PHY_SIZE >> SECTOR_SHIFT))
+	if ((bio_vec_ptr->bv_len > PAGE_SIZE) || (flag == 1) || (start_sector >= (PHY_SIZE >> SECTOR_SHIFT)))
 	{
 		BUG();
 	}
@@ -141,7 +141,7 @@ static int __init kakadisk_init(void)
 		goto out_kaka_disk_ptr;
 	}
 	request_queue_ptr = blk_alloc_queue(GFP_KERNEL);
-	if (NULL == kaka_disk_ptr)
+	if (NULL == request_queue_ptr)
 	{
 		ret = -ENOMEM;
 		goto out_request_queue_ptr;

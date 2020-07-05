@@ -8,7 +8,7 @@ struct my_block_driver_space *find_disk_sector_space(sector_t sector, struct kak
 	BUG_ON(sector >= (PHY_SIZE >> SECTOR_SHIFT));
 	while (node_ptr)
 	{
-		struct my_block_driver_space_ptr = container_of(node_ptr, struct my_block_driver_space, node);
+		struct my_block_driver_space *my_block_driver_space_ptr = container_of(node_ptr, struct my_block_driver_space, node);
 		if (my_block_driver_space_ptr->sector == aim_sector)
 		{
 			return my_block_driver_space_ptr;
@@ -29,6 +29,7 @@ int insert_into_disk_space(struct my_block_driver_space *my_block_driver_space_p
 {
 	struct rb_node **new = &(kaka_disk_ptr->disk_space_tree.rb_node);
 	struct rb_node *parent = NULL;
+	BUG_ON(my_block_driver_space_ptr->sector >= (PHY_SIZE >> SECTOR_SIZE));
 	BUG_ON((my_block_driver_space_ptr->sector & ~SECTOR_MASK) != my_block_driver_space_ptr->sector);
 	while (*new)
 	{
@@ -57,7 +58,7 @@ struct my_block_driver_space *alloc_driver_space(sector_t sector)
 {
 	struct my_block_driver_space *my_block_driver_space_ptr;
 	BUG_ON(sector >= (PHY_SIZE >> SECTOR_SHIFT));
-	my_block_driver_space_ptr = kmalloc(sizeof(struct my_block_driver_space, GFP_KERNEL));
+	my_block_driver_space_ptr = kmalloc(sizeof(struct my_block_driver_space), GFP_KERNEL);
 	if (my_block_driver_space_ptr == NULL)
 	{
 		return ERR_PTR(-ENOMEM);
@@ -86,7 +87,7 @@ void destroy_block_driver_space(struct kaka_disk *kaka_disk_ptr)
 {
 	struct rb_node *node;
 	BUG_ON(kaka_disk_ptr == NULL);
-	for (node = rb_first(kaka_disk_ptr->disk_space_tree); node; )
+	for (node = rb_first(&kaka_disk_ptr->disk_space_tree); node; )
 	{
 		struct my_block_driver_space *my_block_driver_space_ptr = rb_entry(node, struct my_block_driver_space, node);
 		node = rb_next(node);

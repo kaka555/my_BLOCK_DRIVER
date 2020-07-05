@@ -19,7 +19,7 @@ struct kaka_disk
 {
 	phys_addr_t addr;
 	unsigned long size;
-	struct gendisk *kaka_disk;
+	struct gendisk *kaka_gendisk;
 	struct rb_root disk_space_tree;
 };
 

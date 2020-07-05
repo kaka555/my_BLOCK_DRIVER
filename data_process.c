@@ -27,8 +27,9 @@ int _do_sector_data_process(struct kaka_disk *kaka_disk_ptr, void *buf, sector_t
 			{
 				void *disk_data_ptr = kmap(my_block_driver_space_ptr->page_ptr);
 				void *disk_data_aim_ptr = disk_data_ptr + SECTOR_SIZE * (start_sector & SECTOR_MASK);
-				BUG_ON(((unsigned int)disk_data_aim_ptr + this_loop_count) > ((unsigned int)disk_data_ptr) + (unsigned int)KA_BLOCK_SIZE);
+				BUG_ON(((unsigned int)disk_data_aim_ptr + this_loop_count) > ((unsigned int)disk_data_ptr + (unsigned int)KA_BLOCK_SIZE));
 				memcpy(buf + total_done, disk_data_aim_ptr, this_loop_count);
+				kunmap(my_block_driver_space_ptr->page_ptr);
 			}
 		}
 		else //write
@@ -53,14 +54,14 @@ int _do_sector_data_process(struct kaka_disk *kaka_disk_ptr, void *buf, sector_t
 			}
 			disk_data_ptr = kmap(my_block_driver_space_ptr->page_ptr);
 			disk_data_aim_ptr = disk_data_ptr + SECTOR_SIZE * (start_sector & SECTOR_MASK);
-			BUG_ON(((unsigned int)disk_data_aim_ptr + this_loop_count) > ((unsigned int)disk_data_ptr) + (unsigned int)KA_BLOCK_SIZE);
+			BUG_ON(((unsigned int)disk_data_aim_ptr + this_loop_count) > ((unsigned int)disk_data_ptr + (unsigned int)KA_BLOCK_SIZE));
 			memcpy(disk_data_aim_ptr, buf + total_done, this_loop_count);
 			kunmap(my_block_driver_space_ptr->page_ptr);
 		}
 		BUG_ON(this_loop_count & ((1 << SECTOR_SHIFT) - 1));
 		start_sector += (this_loop_count >> SECTOR_SHIFT);
 		total_done += this_loop_count;
-		this_loop_count = min(len - total_done, (unsigned int KA_BLOCK_SIZE));
+		this_loop_count = min(len - total_done, (unsigned int) KA_BLOCK_SIZE);
 		BUG_ON(this_loop_count != len - total_done);
 	}
 	BUG_ON(total_done != len);
