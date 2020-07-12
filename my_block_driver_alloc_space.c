@@ -29,7 +29,7 @@ int insert_into_disk_space(struct my_block_driver_space *my_block_driver_space_p
 {
 	struct rb_node **new = &(kaka_disk_ptr->disk_space_tree.rb_node);
 	struct rb_node *parent = NULL;
-	BUG_ON(my_block_driver_space_ptr->sector >= (PHY_SIZE >> SECTOR_SIZE));
+	BUG_ON(my_block_driver_space_ptr->sector >= (PHY_SIZE >> SECTOR_SHIFT));
 	BUG_ON((my_block_driver_space_ptr->sector & ~SECTOR_MASK) != my_block_driver_space_ptr->sector);
 	while (*new)
 	{
